@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const User = require('../models/User');
 
 /**
@@ -23,7 +24,7 @@ const postUser = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
-    // Hashear la contraseña con bcrypt, validaciones, etc.
+    // 1) Verificar si ya existe el username
     const exists = await User.findOne({ username });
     if (exists) {
       return res.status(400).json({ msg: 'El username ya está registrado' });
@@ -34,10 +35,18 @@ const postUser = async (req, res, next) => {
       return res.status(400).json({ msg: 'El email ya está asociado a una cuenta' });
     }
 
-    const user = new User({ username, email, password });
+    // 2) Hashear contraseña
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // 3) Crear instancia del modelo
+    const user = new User({ username, email, password: hashedPassword });
     await user.save();
 
-    res.status(201).json({ msg: 'Usuario creado', user });
+    // Retornar usuario creado
+    const { password: _, ...userWithoutPassword } = user.toObject();
+    res.status(201).json({ msg: 'Usuario creado', user: userWithoutPassword });
   } catch (error) {
     next(error);
   }
@@ -78,8 +87,10 @@ const putUser = async (req, res, next) => {
     if (username) user.username = username;
     if (email) user.email = email;
     if (password) {
-      // Hashear la nueva contraseña con bcrypt antes de asignar
-      user.password = password;
+      // Hashear la nueva contraseña
+      const saltRounds = 10;
+      const salt = await bcrypt.genSalt(saltRounds);
+      user.password = await bcrypt.hash(password, salt);
     }
 
     const updatedUser = await user.save();
