@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const conectarDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
+const projectRoutes = require('./routes/projectRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 // Cargar variables de entorno
@@ -19,6 +20,7 @@ app.use(express.json()); // parsea JSON en el body
 
 // 3) Rutas
 app.use('/api/users', userRoutes);
+app.use('/api/projects', projectRoutes);
 
 // 4) Ruta por defecto (opcional: bienvenida o documentación mínima)
 app.get('/', (req, res) => {

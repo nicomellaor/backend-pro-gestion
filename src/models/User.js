@@ -17,14 +17,11 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-    },
-    registrationDate: {
-      type: Date,
-      default: Date.now,
-    },
+    }
   },
   {
-    versionKey: false, // elimina el campo __v
+    versionKey: false,
+    timestamps: true,
   }
 );
 
