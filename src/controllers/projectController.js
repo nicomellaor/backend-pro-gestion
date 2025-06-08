@@ -21,16 +21,16 @@ const getProjects = async (req, res, next) => {
 
 const postProject = async (req, res, next) => {
     try {
-        const { projectId, ownerId, membersIds } = req.body;
+        const { projectNumber, ownerId, membersIds } = req.body;
 
         // 1) Verificar si ya existe
-        const exists = await Project.findOne({ projectId });
+        const exists = await Project.findOne({ projectNumber});
         if (exists) {
             return res.status(400).json({ msg: 'El proyecto ya está registrado' });
         }
 
         // 2) Crear instancia del proyecto
-        const project = new Project(projectId, ownerId, membersIds);
+        const project = new Project(projectNumber, ownerId, membersIds);
         await project.save();
 
         // 3) Retornar
@@ -43,7 +43,7 @@ const postProject = async (req, res, next) => {
 const putProject = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { projectId, membersIds } = req.body;
+        const { projectNumber, membersIds } = req.body;
 
         // 1) Verificar que el proyecto exista
         const project = await Project.findById(id);
@@ -51,16 +51,16 @@ const putProject = async (req, res, next) => {
             return res.status(404).json({ msg: 'Proyecto no encontrado' });
         }
         
-        // 2) Validar si el projectId va a cambiar y si ya existe otro proyecto con ese Id
-        if (projectId && projectId !== project.projectId) {
-            const exists = await Project.findOne({ projectId });
+        // 2) Validar si el projectNumber va a cambiar y si ya existe otro proyecto con ese number
+        if (projectNumber && projectNumber !== project.projectNumber) {
+            const exists = await Project.findOne({ projectNumber });
             if (exists) {
-                return res.status(400).json({ msg: 'El Id del proyecto ya está en uso' });
+                return res.status(400).json({ msg: 'El número de proyecto ya está en uso' });
             }
         }
 
         // 3) Actualizar campos
-        if (projectId) project.projectId = projectId;
+        if (projectNumber) project.projectNumber = projectNumber;
         if (membersId) project.membersIds = membersIds;
 
         const updatedProject = await project.save();

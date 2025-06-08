@@ -1,11 +1,10 @@
-const UserStory = require('../models/UserStory');
+const Sprint = require('../models/Sprint');
 const Project = require('../models/Project');
 
-const getUserStories = async (req, res, next) => {
+const getSprints = async (req, res, next) => {
     try {
         const { projectId } = req.params;
 
-        // Validar que el usuario pertenezca al proyecto
         const belongs = await Project.exists({
             _id: projectId,
             $or: [
@@ -15,21 +14,21 @@ const getUserStories = async (req, res, next) => {
         });
         if (!belongs) {
             return res.status(403).json({ msg: 'No se tiene acceso a este proyecto' });
-        }
+        };
 
-        const stories = await UserStory.find({ projectId });
+        const sprints = await Sprint.find({ projectId });
 
-        res.json(stories);
+        res.json(sprints);
 
     } catch (error) {
         next(error);
     }
 };
 
-const postUserStory = async (req, res, next) => {
+const postSprint = async (req, res, next) => {
     try {
         const { projectId } = req.params;
-        const { storyIdStr, story, priority, estimationPoints, criteria } = req.body;
+        const { sprintNumber, startDate, endDate } = req.body;
 
         const belongs = await Project.exists({
             _id: projectId,
@@ -40,25 +39,26 @@ const postUserStory = async (req, res, next) => {
         });
         if (!belongs) {
             return res.status(403).json({ msg: 'No se tiene acceso a este proyecto' });
-        }
+        };
 
-        const exists = await UserStory.findOne({ storyIdStr });
+        const exists = await Sprint.findOne({ sprintNumber });
         if (exists) {
-            return res.status(400).json({ msg: 'UserStory ya está registrado' });
-        }
+            return res.status(400).json({ msg: 'Sprint ya está registrado' });
+        };
 
-        const userstory = new UserStory(projectId, storyIdStr, story, priority, estimationPoints, criteria);
-        await userstory.save();
+        const sprint = new Sprint(projectId, sprintNumber, startDate, endDate);
+        await sprint.save();
 
-        res.status(201).json({ msg: 'UserStory creado', userstory: userstory});
+        res.status(201).json({ msg: 'Sprint creado', sprint: sprint});
+
     } catch (error) {
         next(error);
     }
 };
 
-const putUserStory = async (req, res, next) => {
+const putSprint = async (req, res, next) => {
     try {
-        const { projectId, storyId } = req.params;
+        const { projectId, sprintId } = req.params;
         const updates = req.body;
 
         const belongs = await Project.exists({
@@ -70,26 +70,26 @@ const putUserStory = async (req, res, next) => {
         });
         if (!belongs) {
             return res.status(403).json({ msg: 'No se tiene acceso a este proyecto' });
-        }
+        };
 
-        const story = await UserStory.findOneAndUpdate(
-            { _id: storyId, projectId },
+        const sprint = await Sprint.findOneAndUpdate(
+            { _id: sprintId, projectId },
             updates,
             { new: true, runValidators: true }
         );
-        if(!story) {
-            return res.status(404).json({ msg: 'UserStory no encontrado' });
-        }
+        if (!sprint) {
+            return res.status(404).json({ msg: 'Sprint no encontrado' });
+        };
 
-        res.json({ msg: 'UserStory actualizado', story });
+        res.json({ msg: 'Sprint actualizado', sprint });
     } catch (error) {
         next(error);
     }
 };
 
-const deleteUserStory = async (req, res, next) => {
+const deleteSprint = async (req, res, next) => {
     try {
-        const { projectId, storyId } = req.params;
+        const { projectId, sprintId } = req.params;
 
         const belongs = await Project.exists({
             _id: projectId,
@@ -100,22 +100,23 @@ const deleteUserStory = async (req, res, next) => {
         });
         if (!belongs) {
             return res.status(403).json({ msg: 'No se tiene acceso a este proyecto' });
-        }
+        };
 
-        const result = await UserStory.findOneAndDelete({_id: storyId, projectId });    
+        const result = await Sprint.findOneAndDelete({ _id: sprintId, projectId });
         if(!result){
-            return res.status(404).json({ msg: 'UserStory no encontrado' });
+            return res.status(404).json({ msg: 'Sprint no encontrado' });
         }
 
-        res.json({ msg: 'UserStory eliminado' });
+        res.json({ msg: 'Sprint eliminado' });
+
     } catch (error) {
         next(error);
     }
 };
 
 module.exports = {
-    getUserStories,
-    postUserStory,
-    putUserStory,
-    deleteUserStory
+    getSprints,
+    postSprint,
+    putSprint,
+    deleteSprint
 };

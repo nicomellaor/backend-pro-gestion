@@ -7,7 +7,8 @@ const {
     putProject,
     deleteProject
 } = require('../controllers/projectController');
-const userStoryRoutes = require('../controllers/userStoryController'); 
+const userStoryRoutes = require('../routes/userStoryRoutes');
+const sprintRoutes = require('../routes/sprintRoutes'); 
 
 // Todas estas rutas requieren estar autenticado
 router.use(auth);
@@ -18,7 +19,8 @@ router.post('/', postProject);
 router.put('/:id', putProject);
 router.delete('/:id', deleteProject);
 
-// Anidar rutas de UserStories
+// Rutas anidadas
 router.use('/:projectId/userstories', userStoryRoutes);
+router.use('/:projectId/sprints', sprintRoutes);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema({
-  projectId: {
+  projectNumber: {
     type: Number,
     required: true,
     unique: true,
