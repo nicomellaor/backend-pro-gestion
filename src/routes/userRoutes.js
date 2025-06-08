@@ -14,9 +14,9 @@ router.get('/', getUsers);
 router.post('/', postUser);
 
 // PUT /api/users
-router.post('/:id', putUser);
+router.put('/:id', putUser);
 
 // DELETE /api/users
-router.post('/:id', deleteUser);
+router.delete('/:id', deleteUser);
 
 module.exports = router;

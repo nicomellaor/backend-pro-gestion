@@ -59,49 +59,34 @@ const postUser = async (req, res, next) => {
  */
 const putUser = async (req, res, next) => {
   try {
-    const { id } = req.params; // Se obtiene de la URL ('/api/users/:id')
-    const { username, email, password } = req.body;
+    const { id } = req.params;
+    const updates = { ...req.body };
 
-    // 1) Verificar que el usuario exista
-    const user = await User.findById(id);
-    if(!user) {
+    // Hashear password
+    if (updates.password) {
+      const salt = await bcrypt.genSalt(10);
+      updates.password = await bcrypt.hash(updates.password, salt);
+    }
+
+    const updated = await User.findByIdAndUpdate(
+      id,
+      updates,
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!updated) {
       return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
 
-    // 2) Validar si el username va a cambiar y si ya existe otro usuario con ese username
-    if (username && username !== user.username) {
-      const exists = await User.findOne({ username });
-      if (exists) {
-        return res.status(400).json({ msg: 'El username ya está en uso por otro usuario' });
-      }
+    res.json({ msg: 'Usuario actualizado', user: updated });
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(400).json({ msg: 'ID inválido' });
     }
-
-    if (email && email !== user.email) {
-      const existsEmail = await User.findOne({ email });
-      if (existsEmail) {
-        return res.status(400).json({ msg: 'El email ya está en uso por otro usuario' });
-      }
-    }
-
-    // 3) Actualizar campos
-    if (username) user.username = username;
-    if (email) user.email = email;
-    if (password) {
-      // Hashear la nueva contraseña
-      const saltRounds = 10;
-      const salt = await bcrypt.genSalt(saltRounds);
-      user.password = await bcrypt.hash(password, salt);
-    }
-
-    const updatedUser = await user.save();
-
-    // Retornar usuario actualizado
-    const { password: _, ...userWithoutPassword } = updatedUser.toObject();
-    res.json({ msg: 'Usuario actualizado', user: userWithoutPassword });
-  } catch (error) {
-    next(error);
+    next(err);
   }
 };
+
 
 /**
  * @desc   Eliminar un usuario
