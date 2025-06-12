@@ -46,7 +46,7 @@ const postSprint = async (req, res, next) => {
             return res.status(400).json({ msg: 'Sprint ya está registrado' });
         };
 
-        const sprint = new Sprint(projectId, sprintNumber, startDate, endDate);
+        const sprint = new Sprint({projectId, sprintNumber, startDate, endDate});
         await sprint.save();
 
         res.status(201).json({ msg: 'Sprint creado', sprint: sprint});

@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const conectarDB = require('./config/db');
+const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const errorHandler = require('./middleware/errorHandler');
@@ -19,6 +20,7 @@ app.use(cors()); // habilita CORS para todas las rutas
 app.use(express.json()); // parsea JSON en el body
 
 // 3) Rutas
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 

@@ -7,7 +7,7 @@ const sprintSchema = new mongoose.Schema({
         required: true 
     },
     sprintNumber: { 
-    type: String, 
+    type: Number, 
     required: true 
     },
     startDate: Date,

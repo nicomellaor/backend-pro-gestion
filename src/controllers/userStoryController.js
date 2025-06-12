@@ -47,7 +47,7 @@ const postUserStory = async (req, res, next) => {
             return res.status(400).json({ msg: 'UserStory ya está registrado' });
         }
 
-        const userstory = new UserStory(projectId, storyIdStr, story, priority, estimationPoints, criteria);
+        const userstory = new UserStory({projectId, storyIdStr, story, priority, estimationPoints, criteria});
         await userstory.save();
 
         res.status(201).json({ msg: 'UserStory creado', userstory: userstory});

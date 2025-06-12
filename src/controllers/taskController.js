@@ -19,14 +19,13 @@ const getTasks = async (req, res, next) => {
 
     const validSprint = await Sprint.exists({
       _id: sprintId,
-      project: projectId
+      projectId: projectId
     });
     if (!validSprint) {
       return res.status(404).json({ msg: 'Sprint no encontrado en este proyecto' });
     }
 
-    const tasks = await Task.find({ sprint: sprintId })
-      .sort({ createdAt: 1 });
+    const tasks = await Task.find({ sprint: sprintId });
     res.json(tasks);
   } catch (err) {
     next(err);
@@ -36,7 +35,7 @@ const getTasks = async (req, res, next) => {
 const postTask = async (req, res, next) => {
   try {
     const { projectId, sprintId } = req.params;
-    const { idNumber, name, state, description, managers, startDate, endDate } = req.body;
+    const { name, state, description, managers, startDate, endDate } = req.body;
 
     const belongs = await Project.exists({
       _id: projectId,
@@ -51,13 +50,13 @@ const postTask = async (req, res, next) => {
 
     const validSprint = await Sprint.exists({
       _id: sprintId,
-      project: projectId
+      projectId: projectId
     });
     if (!validSprint) {
       return res.status(404).json({ msg: 'Sprint no encontrado en este proyecto' });
     }
 
-    const task = new Task(sprintId, idNumber, name, state, description, managers, startDate, endDate);
+    const task = new Task({sprintId, name, state, description, managers, startDate, endDate});
     await task.save();
 
     res.status(201).json({ msg: 'Tarea creada', task });

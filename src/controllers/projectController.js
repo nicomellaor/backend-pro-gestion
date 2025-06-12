@@ -24,13 +24,13 @@ const postProject = async (req, res, next) => {
         const { projectNumber, ownerId, membersIds } = req.body;
 
         // 1) Verificar si ya existe
-        const exists = await Project.findOne({ projectNumber});
+        const exists = await Project.findOne({ projectNumber });
         if (exists) {
             return res.status(400).json({ msg: 'El proyecto ya está registrado' });
         }
 
         // 2) Crear instancia del proyecto
-        const project = new Project(projectNumber, ownerId, membersIds);
+        const project = new Project({projectNumber, ownerId, membersIds});
         await project.save();
 
         // 3) Retornar
@@ -61,7 +61,7 @@ const putProject = async (req, res, next) => {
 
         // 3) Actualizar campos
         if (projectNumber) project.projectNumber = projectNumber;
-        if (membersId) project.membersIds = membersIds;
+        if (membersIds) project.membersIds = membersIds;
 
         const updatedProject = await project.save();
 
