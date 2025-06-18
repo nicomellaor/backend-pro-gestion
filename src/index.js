@@ -16,7 +16,10 @@ const app = express();
 conectarDB();
 
 // 2) Middlewares globales
-app.use(cors()); // habilita CORS para todas las rutas
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  //credentials: true
+})); // habilita CORS para React
 app.use(express.json()); // parsea JSON en el body
 
 // 3) Rutas
