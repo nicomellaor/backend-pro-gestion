@@ -35,7 +35,7 @@ const getTasks = async (req, res, next) => {
 const postTask = async (req, res, next) => {
   try {
     const { projectId, sprintId } = req.params;
-    const { name, state, description, managers, startDate, endDate } = req.body;
+    const { taskNumber, name, state, description, managers, startDate, endDate } = req.body;
 
     const belongs = await Project.exists({
       _id: projectId,
@@ -56,7 +56,7 @@ const postTask = async (req, res, next) => {
       return res.status(404).json({ msg: 'Sprint no encontrado en este proyecto' });
     }
 
-    const task = new Task({sprintId, name, state, description, managers, startDate, endDate});
+    const task = new Task({sprintId, taskNumber, name, state, description, managers, startDate, endDate});
     await task.save();
 
     res.status(201).json({ msg: 'Tarea creada', task });

@@ -7,8 +7,8 @@ const sprintSchema = new mongoose.Schema({
         required: true 
     },
     sprintNumber: { 
-    type: Number, 
-    required: true 
+        type: Number, 
+        required: true 
     },
     startDate: Date,
     endDate: Date

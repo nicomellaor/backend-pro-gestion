@@ -6,6 +6,11 @@ const taskSchema = new mongoose.Schema({
         ref: 'Sprint', 
         required: true 
     },
+    taskNumber: {
+        type: Number,
+        required: true,
+        unique: true
+    },
     name: {
         type: String,
         required: true,
